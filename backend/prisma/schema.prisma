@@ -9,7 +9,7 @@ datasource db {
 
 model Node {
   id            String   @id @default(cuid())
-  hostname      String
+  hostname      String   @unique
   ipAddress     String   @map("ip_address")
   status        String
   lastSeen      DateTime  @map("last_seen")
