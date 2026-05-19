@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Node {
+  id            String   @id @default(cuid())
+  hostname      String
+  ipAddress     String   @map("ip_address")
+  status        String
+  lastSeen      DateTime  @map("last_seen")
+  agentVersion  String   @map("agent_version")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  events        Event[]
+
+  @@map("nodes")
+}
+
+model Event {
+  id              String   @id @default(cuid())
+  nodeId          String   @map("node_id")
+  param           String
+  process         String
+  decisionAction  String   @map("decision_action")
+  finalAction     String   @map("final_action")
+  cooldownApplied Boolean  @map("cooldown_applied")
+  conflictDetected Boolean  @map("conflict_detected")
+  timestamp       DateTime
+  node            Node     @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  @@map("events")
+}
+
+model Policy {
+  id         String   @id @default(cuid())
+  version    String   @unique
+  policyJson Json     @map("policy_json")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("policies")
+}
